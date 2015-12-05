@@ -1,0 +1,10 @@
+{
+    "splunk": {
+        "username": "sample",
+        "password": "sample",
+        "host": "sample",
+        "port": "sample"
+    },
+
+    "classification": {}
+}

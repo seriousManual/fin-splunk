@@ -1,0 +1,17 @@
+{
+  "name": "fin-splunk",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "configurations": "^1.1.0",
+    "csv-parse": "^1.0.1",
+    "moment": "^2.10.6",
+    "splunk-sdk": "^1.8.0"
+  }
+}
