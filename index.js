@@ -19,7 +19,5 @@ service.connect(function(error, service) {
         .read(__dirname + '/data.csv')
         .pipe(new PositionStream())
         .pipe(classificationStream)
-        .pipe(new SaveStream(service))
-        .on('end', () => console.log('done'))
-        .on('error', (error) => console.log(error));
+        .pipe(new SaveStream(service));
 });
