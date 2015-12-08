@@ -7,9 +7,6 @@ var Classification = require('./lib/classification/Classification');
 var ClassificationStream = require('./lib/classification/ClassificationStream');
 var SaveStream = require('./lib/save/SaveStream');
 
-var classification = new Classification(config.classification);
-var classificationStream = new ClassificationStream(classification);
-
 service.connect(function(error, service) {
     if (error) {
         throw error;
@@ -18,6 +15,6 @@ service.connect(function(error, service) {
     reader
         .read(__dirname + '/data.csv')
         .pipe(new PositionStream())
-        .pipe(classificationStream)
+        .pipe(new ClassificationStream(new Classification(config.classification)))
         .pipe(new SaveStream(service));
 });
