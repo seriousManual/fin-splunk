@@ -10,9 +10,7 @@ var ClassificationStream = require('./lib/classification/ClassificationStream');
 var SaveStream = require('./lib/save/SaveStream');
 
 service.connect(function(error, service) {
-    if (error) {
-        throw error;
-    }
+    if (error) throw error;
 
     reader
         .read(__dirname + '/data.csv')
