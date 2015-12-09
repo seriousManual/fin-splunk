@@ -1,13 +1,16 @@
+var moment = require('moment')
 var sinon = require('sinon')
 var expect = require('chai').expect
 
 var Position = require('../lib/position/Position')
 var FilterData = require('../lib/filter/FilterData')
 var FilterStream = require('../lib/filter/FilterStream')
+var SaveStream = require('../lib/save/SaveStream')
 
 var createServiceMock = (error, result) => {
     return {
-        oneshotSearch: sinon.spy((search, parameters, callback) => callback(error || null, result || null))
+        oneshotSearch: sinon.spy((search, parameters, callback) => callback(error || null, result || null)),
+        log: sinon.spy((message, parms, callback) => callback(error || null))
     }
 }
 var createFilterDataMock = (error, contains) => {
@@ -115,6 +118,64 @@ describe('fin-splunk', () => {
 
                 it('should only let the correct values pass', () => expect(collected).to.deep.equal(['bar']))
             })
+        })
+    })
+
+    describe('savestream', () => {
+        describe('error', () => {
+            var error;
+            var collection = [];
+            var serviceMock = createServiceMock(new Error('fooError'))
+            var saveStream = new SaveStream(serviceMock)
+
+            var date = moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY')
+            var dummyPosition = {
+                data: () => ({a: 'b', c: 'd'}),
+                date: () => date.format('DD-MM-YYYY')
+            };
+
+            before((done) => {
+                saveStream
+                    .on('error', (_error) => {
+                        error = _error
+                        done()
+                    })
+                    .on('data', (data) => collection.push(data))
+                    .write(dummyPosition)
+
+
+            })
+
+            it('should return an error', () => expect(error.message).to.equal('fooError'))
+            it('log something', () => expect(serviceMock.log.args[0][0]).to.equal(date.format() + ' a="b" c="d"'))
+        })
+
+        describe('success', () => {
+            var error = null;
+            var collection = [];
+            var serviceMock = createServiceMock(null)
+            var saveStream = new SaveStream(serviceMock)
+
+            var date = moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY')
+            var dummyPosition = {
+                data: () => ({a: 'b', c: 'd"asdf'}),
+                date: () => date.format('DD-MM-YYYY')
+            };
+
+            before((done) => {
+                saveStream
+                    .on('end', done)
+                    .on('error', (_error) => error = _error)
+                    .on('data', (data) => collection.push(data))
+                    .write(dummyPosition)
+
+                saveStream.end()
+            })
+
+            it('should return an error', () => expect(error).to.be.null)
+            it('log something', () => expect(serviceMock.log.args[0][0]).to.equal(date.format() + ' a="b" c="dasdf"'))
+            it('should also output', () => expect(collection[0]).to.equal(dummyPosition))
+            it('should return only one element', () => expect(collection.length).to.equal(1))
         })
     })
 })
