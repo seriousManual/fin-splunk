@@ -7,6 +7,8 @@ var PositionStream = require('../lib/Position/PositionStream')
 var FilterData = require('../lib/filter/FilterData')
 var FilterStream = require('../lib/filter/FilterStream')
 var SaveStream = require('../lib/save/SaveStream')
+var Classification = require('../lib/classification/Classification')
+var ClassificationStream = require('../lib/classification/ClassificationStream')
 
 var createServiceMock = (error, result) => {
     return {
@@ -20,6 +22,12 @@ var createFilterDataMock = (error, contains) => {
 
     return {
         contains: sinon.spy((position, callback) => callback(error, contains[i++]))
+    }
+}
+var createClassifyMock = (classifications) => {
+    var i = 0
+    return {
+        classify: sinon.spy(() => classifications[i++])
     }
 }
 
@@ -216,5 +224,91 @@ describe('fin-splunk', () => {
             classification: null,
             checksum: 'a239d858cf3a57cb8478a740beb2d86234e8bb1c'
         }));
+    })
+
+    describe('classification', () => {
+        describe('data', () => {
+            var classi;
+            before(() => {
+                classi = new Classification({
+                    foo: ['bar', 'bax']
+                })
+            })
+
+            it('should return the correct classification', () => expect(classi.classify('asdf bar asdf')).to.equal('foo'))
+            it('should return the correct classification', () => expect(classi.classify('aaafff111asdaf bax asdfsdf')).to.equal('foo'))
+            it('should return null', () => expect(classi.classify('spam eggs')).to.be.null)
+        })
+
+        describe('stream', () => {
+            describe('no match', () => {
+                var error = null;
+                var collection = [];
+                var classiStream, classiMock
+
+                before((done) => {
+                    classiMock = createClassifyMock([null, null])
+                    classiStream = new ClassificationStream(classiMock)
+
+                    classiStream
+                        .on('end', done)
+                        .on('error', (_error) => error = _error)
+                        .on('data', (data) => collection.push(data))
+                        .write(new Position({purpose: 'fooPurpose', partner: 'fooPartner'}))
+
+                    classiStream.end()
+                })
+
+                it('should not emit an error', () => expect(error).to.be.null)
+                it('should ask the classifier', () => expect(classiMock.classify.args).to.deep.equal([['fooPurpose'], ['fooPartner']]))
+                it('should set default classification', () => expect(collection[0].classification()).to.equal('unclassified'))
+            })
+
+            describe('purpose match', () => {
+                var error = null;
+                var collection = [];
+                var classiStream, classiMock
+
+                before((done) => {
+                    classiMock = createClassifyMock(['fooClassification'])
+                    classiStream = new ClassificationStream(classiMock)
+
+                    classiStream
+                        .on('end', done)
+                        .on('error', (_error) => error = _error)
+                        .on('data', (data) => collection.push(data))
+                        .write(new Position({purpose: 'fooPurpose', partner: 'fooPartner'}))
+
+                    classiStream.end()
+                })
+
+                it('should not emit an error', () => expect(error).to.be.null)
+                it('should ask the classifier', () => expect(classiMock.classify.args).to.deep.equal([['fooPurpose']]))
+                it('should set correct classification', () => expect(collection[0].classification()).to.equal('fooClassification'))
+            })
+
+            describe('partner match', () => {
+                var error = null;
+                var collection = [];
+                var classiStream, classiMock
+
+                before((done) => {
+                    classiMock = createClassifyMock([null, 'fooClassification'])
+                    classiStream = new ClassificationStream(classiMock)
+
+                    classiStream
+                        .on('end', done)
+                        .on('error', (_error) => error = _error)
+                        .on('data', (data) => collection.push(data))
+                        .write(new Position({purpose: 'fooPurpose', partner: 'fooPartner'}))
+
+                    classiStream.end()
+                })
+
+                it('should not emit an error', () => expect(error).to.be.null)
+                it('should ask the classifier', () => expect(classiMock.classify.args).to.deep.equal([['fooPurpose'], ['fooPartner']]))
+                it('should set default classification', () => expect(collection[0].classification()).to.equal('fooClassification'))
+            })
+        })
     })
 })
