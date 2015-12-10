@@ -8,7 +8,7 @@ service.connect(function(error, service) {
         throw error;
     }
 
-    var message = moment('09.05.2014', 'DD-MM-YYYY').format() + ' amount=3780.03 classification=balancing account=11135445 purpose=balancing partner=me partnerAccountNumber=11135445 partnerBank=76350000 ';
+    var message = moment('09.05.2014', 'DD-MM-YYYY').format() + ' amount=42 classification=balancing account=zzz purpose=balancing partner=me partnerAccountNumber=yyy partnerBank=xxx ';
 
     service.log(message, {index: 'finance'}, (error) => console.log('done'));
 });
