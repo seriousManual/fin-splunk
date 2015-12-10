@@ -3,6 +3,7 @@ var sinon = require('sinon')
 var expect = require('chai').expect
 
 var Position = require('../lib/position/Position')
+var PositionStream = require('../lib/Position/PositionStream')
 var FilterData = require('../lib/filter/FilterData')
 var FilterStream = require('../lib/filter/FilterStream')
 var SaveStream = require('../lib/save/SaveStream')
@@ -177,5 +178,43 @@ describe('fin-splunk', () => {
             it('should also output', () => expect(collection[0]).to.equal(dummyPosition))
             it('should return only one element', () => expect(collection.length).to.equal(1))
         })
+    })
+
+    describe('positionstream', () => {
+        var error = null;
+        var collection = [];
+        var positionStream;
+
+        before((done) => {
+            positionStream = new PositionStream();
+
+            positionStream
+                .on('end', done)
+                .on('error', (_error) => error = _error)
+                .on('data', (data) => collection.push(data))
+                .write({
+                    "Buchungstag": "10.01.2015",
+                    "Auftragskonto": "fooAccount",
+                    "Verwendungszweck": "fooPurpose",
+                    "Beguenstigter/Zahlungspflichtiger": "fooPartner",
+                    "Kontonummer": "fooPartnerAccountNumber",
+                    "BLZ": "fooBLZ",
+                    "Betrag": "1000,20"
+                })
+
+            positionStream.end()
+        })
+
+        it('should not return an error', () => expect(error).to.be.null)
+        it('should convert the csv entry', () => expect(collection[0].data()).to.deep.equal({
+            account: 'fooAccount',
+            purpose: 'fooPurpose',
+            partner: 'fooPartner',
+            partnerAccountNumber: 'fooPartnerAccountNumber',
+            partnerBank: 'fooBLZ',
+            amount: 1000.20,
+            classification: null,
+            checksum: 'a239d858cf3a57cb8478a740beb2d86234e8bb1c'
+        }));
     })
 })
