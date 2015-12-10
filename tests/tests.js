@@ -103,9 +103,6 @@ describe('fin-splunk', () => {
                             done()
                         })
                         .write('foo')
-
-                    filterStream.write('bar')
-                    filterStream.write('bax')
                 })
                 
                 it('should return an error', () => expect(error.message).to.equal('fooError'))
@@ -125,7 +122,7 @@ describe('fin-splunk', () => {
                     filterStream.on('data', (data) => collected.push(data))
                 })
 
-                it('should only let the correct values pass', () => expect(collected).to.deep.equal(['bar']))
+                it('should only let the correct values pass', () => expect(collected).to.deep.equal(['foo', 'bax']))
             })
         })
     })
