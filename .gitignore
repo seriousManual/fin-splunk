@@ -1,5 +1,5 @@
 .idea
 config/user.manu.js
 node_modules
-data.csv
+data*.csv
 user.manu.json
