@@ -55,7 +55,7 @@ describe('fin-splunk', () => {
 
             describe('init success, found', () => {
                 var error, result
-                var dummyService = createServiceMock(null, {rows: [['5c1ff7c37588eb7051737a9d4a2adf0cd10c2a62']]})
+                var dummyService = createServiceMock(null, {rows: [['4d723314fded5decdbfde462cc1217ef2c69d384']]})
                 var filterData = new FilterData(dummyService)
                 var testPosition = new Position({account: 'fooAccount'})
 
@@ -125,6 +125,7 @@ describe('fin-splunk', () => {
                 })
 
                 it('should only let the correct values pass', () => expect(collected).to.deep.equal(['foo', 'bax']))
+                it('should return the number of blocked entries', () => expect(filterStream.countBlocked()).to.equal(1))
             })
         })
     })
@@ -221,7 +222,7 @@ describe('fin-splunk', () => {
             partnerBank: 'fooBLZ',
             amount: 1000.20,
             classification: null,
-            checksum: 'a239d858cf3a57cb8478a740beb2d86234e8bb1c'
+            checksum: '4dd0629c2965873956aa2d28876fb4abf254f603'
         }));
     })
 
@@ -314,7 +315,7 @@ describe('fin-splunk', () => {
     describe('integration', () => {
         var serviceMock;
         before((done) => {
-            serviceMock = createServiceMock(null, {rows: [['e2b82f4594669057218982d36f3a6ddb40327b81'], ['72688ab65229815ae9afb2b260a8009c1465f03c']]})
+            serviceMock = createServiceMock(null, {rows: [['49c7b2de009e2c26fb9e33d92569f98b8c1ee2c9'], ['0042f696e8fd0c4d17bf101362c48df67aca4d6f']]})
 
             instance(path.join(__dirname, 'testdata.csv'), serviceMock, {
                 classification: {
@@ -327,7 +328,7 @@ describe('fin-splunk', () => {
         })
 
         it('should log the correct amount', () => expect(serviceMock.log.args.length).to.equal(2))
-        it('should log', () => expect(serviceMock.log.args[0][0]).to.equal('2015-12-14T00:00:00+01:00 account="123456" purpose="fooPurpose" classification="c1" partner="fooPartner" partnerAccountNumber="fooPartnerAccount" partnerBank="fooPartnerBank" amount="-42" checksum="58d6969cecea80e05cd5b78630319eddab17b816"'))
-        it('should log', () => expect(serviceMock.log.args[1][0]).to.equal('2015-12-14T00:00:00+01:00 account="123456" purpose="bazPurpose" classification="c2" partner="bazPartner" partnerAccountNumber="bazPartnerAccount" partnerBank="bazPartnerBank" amount="1337" checksum="bbdd0d9fff78f467c9a44efd34eeab3cc4706d16"'))
+        it('should log', () => expect(serviceMock.log.args[0][0]).to.equal('2015-12-14T00:00:00+01:00 account="123456" purpose="fooPurpose" classification="c1" partner="fooPartner" partnerAccountNumber="fooPartnerAccount" partnerBank="fooPartnerBank" amount="-42" checksum="034042d7b2d968661ad20da207a7ab81fda9c906"'))
+        it('should log', () => expect(serviceMock.log.args[1][0]).to.equal('2015-12-14T00:00:00+01:00 account="123456" purpose="bazPurpose" classification="c2" partner="bazPartner" partnerAccountNumber="bazPartnerAccount" partnerBank="bazPartnerBank" amount="1337" checksum="140bc7f1fe29b8f177d2a360144c0ff04f45ea17"'))
     })
 })
