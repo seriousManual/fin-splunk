@@ -8,5 +8,8 @@ service.connect(function(error, service) {
         throw error;
     }
 
-    instance(__dirname + '/data.csv', service, config);
+    var count = 0;
+    instance(__dirname + '/data.csv', service, config)
+        .on('data', (data) => count++)
+        .on('end', () => console.log('%d entries updated', count))
 });
