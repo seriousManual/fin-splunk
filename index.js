@@ -1,15 +1,20 @@
-var config = require('./lib/config');
-var service = require('./lib/service');
+var config = require('./lib/config')
+var service = require('./lib/service')
 
-var instance = require('./instance');
+var instance = require('./instance')
 
 service.connect(function(error, service) {
     if (error) {
-        throw error;
+        throw error
     }
 
-    var count = 0;
-    instance(__dirname + '/data/.csv', service, config)
+    var count = 0
+    var stream = instance(__dirname + '/data/data20151212.csv', service, config)
+
+    stream
         .on('data', (data) => count++)
-        .on('end', () => console.log('%d entries inserted', count))
-});
+        .on('end', () => {
+            console.log('%d entries inserted', count)
+            console.log('%d entries blocked', stream.__filterStream.countBlocked())
+        })
+})
