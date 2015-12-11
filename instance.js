@@ -12,8 +12,8 @@ function instance(file, service, config) {
     return fs.createReadStream(file)
         .pipe(parse({delimiter: ';', columns: true}))
         .pipe(new PositionStream())
-        .pipe(new FilterStream(new FilterData(service)))
         .pipe(new ClassificationStream(new Classification(config.classification)))
+        .pipe(new FilterStream(new FilterData(service)))
         .pipe(new SaveStream(service))
 }
 
