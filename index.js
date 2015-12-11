@@ -12,10 +12,14 @@ var SaveStream = require('./lib/save/SaveStream');
 service.connect(function(error, service) {
     if (error) throw error;
 
+    var count = 0;
+
     reader
         .read(__dirname + '/data.csv')
         .pipe(new PositionStream())
-        .pipe(new FilterStream(new FilterData(service)))
         .pipe(new ClassificationStream(new Classification(config.classification)))
-        .pipe(new SaveStream(service));
+        .pipe(new FilterStream(new FilterData(service)))
+        .pipe(new SaveStream(service))
+        .on('data', (data) => count++)
+        .on('end', () => console.log('saved %d entries', count))
 });
