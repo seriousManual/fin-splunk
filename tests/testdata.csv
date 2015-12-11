@@ -1,0 +1,5 @@
+"Auftragskonto";"Buchungstag";"Valutadatum";"Buchungstext";"Verwendungszweck";"Beguenstigter/Zahlungspflichtiger";"Kontonummer";"BLZ";"Betrag";"Waehrung";"Info"
+"123456";"14.12.15";"14.12.15";"fooText";"fooPurpose";"fooPartner";"fooPartnerAccount";"fooPartnerBank";"-42,00";"EUR";"fooInfo"
+"123456";"14.12.15";"14.12.15";"barText";"barPurpose";"barPartner";"barPartnerAccount";"barPartnerBank";"23,00";"EUR";"barInfo"
+"123456";"14.12.15";"14.12.15";"bazText";"bazPurpose";"bazPartner";"bazPartnerAccount";"bazPartnerBank";"1337,00";"EUR";"bazInfo"
+"123456";"14.12.15";"14.12.15";"baxText";"baxPurpose";"baxPartner";"baxPartnerAccount";"baxPartnerBank";"-37,00";"EUR";"baxInfo"

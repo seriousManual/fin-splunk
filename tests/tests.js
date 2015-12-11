@@ -1,7 +1,9 @@
+var path = require('path')
 var moment = require('moment')
 var sinon = require('sinon')
 var expect = require('chai').expect
 
+var instance = require('../instance')
 var Position = require('../lib/position/Position')
 var PositionStream = require('../lib/Position/PositionStream')
 var FilterData = require('../lib/filter/FilterData')
@@ -125,7 +127,7 @@ describe('fin-splunk', () => {
                     filterStream.on('data', (data) => collected.push(data))
                 })
 
-                it('should only let the correct values pass', () => expect(collected).to.deep.equal(['bar']))
+                it('should only let the correct values pass', () => expect(collected).to.deep.equal(['foo', 'bax']))
             })
         })
     })
@@ -310,5 +312,25 @@ describe('fin-splunk', () => {
                 it('should set default classification', () => expect(collection[0].classification()).to.equal('fooClassification'))
             })
         })
+    })
+
+    describe('integration', () => {
+        var serviceMock;
+        before((done) => {
+            serviceMock = createServiceMock(null, {rows: [['e2b82f4594669057218982d36f3a6ddb40327b81'], ['72688ab65229815ae9afb2b260a8009c1465f03c']]})
+
+            instance(path.join(__dirname, 'testdata.csv'), serviceMock, {
+                classification: {
+                    'c1': ['foo', 'bar'],
+                    'c2': ['bax', 'baz']
+                }
+            })
+                .on('data', (data) => 1)
+                .on('end', done)
+        })
+
+        it('should log the correct amount', () => expect(serviceMock.log.args.length).to.equal(2))
+        it('should log', () => expect(serviceMock.log.args[0][0]).to.equal('2015-12-14T00:00:00+01:00 account="123456" purpose="fooPurpose" classification="c1" partner="fooPartner" partnerAccountNumber="fooPartnerAccount" partnerBank="fooPartnerBank" amount="-42" checksum="58d6969cecea80e05cd5b78630319eddab17b816"'))
+        it('should log', () => expect(serviceMock.log.args[1][0]).to.equal('2015-12-14T00:00:00+01:00 account="123456" purpose="bazPurpose" classification="c2" partner="bazPartner" partnerAccountNumber="bazPartnerAccount" partnerBank="bazPartnerBank" amount="1337" checksum="bbdd0d9fff78f467c9a44efd34eeab3cc4706d16"'))
     })
 })
