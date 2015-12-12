@@ -1,6 +1,6 @@
 {
   "name": "fin-splunk",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "bank account importer for splunk",
   "main": "index.js",
   "scripts": {
