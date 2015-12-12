@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/seriousManual/fin-splunk.png)](https://travis-ci.org/seriousManual/fin-splunk)
+
 # FIN-SPLUNK
 
 takes your exported bank account movements and imports them into splunk
