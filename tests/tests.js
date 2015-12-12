@@ -1,3 +1,5 @@
+"use strict";
+
 var path = require('path')
 var moment = require('moment')
 var sinon = require('sinon')
@@ -314,21 +316,26 @@ describe('fin-splunk', () => {
 
     describe('integration', () => {
         var serviceMock;
+        let collection = [];
         before((done) => {
-            serviceMock = createServiceMock(null, {rows: [['49c7b2de009e2c26fb9e33d92569f98b8c1ee2c9'], ['0042f696e8fd0c4d17bf101362c48df67aca4d6f']]})
-
-            instance(path.join(__dirname, 'testdata.csv'), serviceMock, {
+            var dummyConfig = {
                 classification: {
                     'c1': ['foo', 'bar'],
                     'c2': ['bax', 'baz']
                 }
-            })
-                .on('data', (data) => 1)
+            };
+            serviceMock = createServiceMock(null, {rows: [['49c7b2de009e2c26fb9e33d92569f98b8c1ee2c9'], ['0042f696e8fd0c4d17bf101362c48df67aca4d6f']]})
+
+            instance(path.join(__dirname, 'testdata.csv'), serviceMock, dummyConfig)
+                .on('data', (data) => collection.push(data))
                 .on('end', done)
         })
 
         it('should log the correct amount', () => expect(serviceMock.log.args.length).to.equal(2))
         it('should log', () => expect(serviceMock.log.args[0][0]).to.equal('2015-12-14T00:00:00+01:00 account="123456" purpose="fooPurpose" classification="c1" partner="fooPartner" partnerAccountNumber="fooPartnerAccount" partnerBank="fooPartnerBank" amount="-42" checksum="034042d7b2d968661ad20da207a7ab81fda9c906"'))
         it('should log', () => expect(serviceMock.log.args[1][0]).to.equal('2015-12-14T00:00:00+01:00 account="123456" purpose="bazPurpose" classification="c2" partner="bazPartner" partnerAccountNumber="bazPartnerAccount" partnerBank="bazPartnerBank" amount="1337" checksum="140bc7f1fe29b8f177d2a360144c0ff04f45ea17"'))
+        it('should return the saved positions', () => expect(collection.length).to.equal(2))
+        it('should return the saved positions', () => expect(collection[0]._purpose).to.equal('fooPurpose'))
+        it('should return the saved positions', () => expect(collection[1]._purpose).to.equal('bazPurpose'))
     })
 })
