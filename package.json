@@ -1,7 +1,7 @@
 {
   "name": "fin-splunk",
   "version": "2.0.0",
-  "description": "",
+  "description": "bank account importer for splunk",
   "main": "index.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha tests"
