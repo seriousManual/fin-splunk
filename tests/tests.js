@@ -7,7 +7,7 @@ var expect = require('chai').expect
 
 var instance = require('../instance')
 var Position = require('../lib/position/Position')
-var PositionStream = require('../lib/Position/PositionStream')
+var PositionStream = require('../lib/position/PositionStream')
 var FilterData = require('../lib/filter/FilterData')
 var FilterStream = require('../lib/filter/FilterStream')
 var SaveStream = require('../lib/save/SaveStream')
