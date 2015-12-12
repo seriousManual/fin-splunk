@@ -139,7 +139,7 @@ describe('fin-splunk', () => {
             var serviceMock = createServiceMock(new Error('fooError'))
             var saveStream = new SaveStream(serviceMock)
 
-            var date = moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY')
+            var date = moment.utc(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY')
             var dummyPosition = {
                 data: () => ({a: 'b', c: 'd'}),
                 date: () => date.format('DD-MM-YYYY')
@@ -167,7 +167,7 @@ describe('fin-splunk', () => {
             var serviceMock = createServiceMock(null)
             var saveStream = new SaveStream(serviceMock)
 
-            var date = moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY')
+            var date = moment.utc(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY')
             var dummyPosition = {
                 data: () => ({a: 'b', c: 'd"asdf'}),
                 date: () => date.format('DD-MM-YYYY')
@@ -332,8 +332,8 @@ describe('fin-splunk', () => {
         })
 
         it('should log the correct amount', () => expect(serviceMock.log.args.length).to.equal(2))
-        it('should log', () => expect(serviceMock.log.args[0][0]).to.equal('2015-12-14T00:00:00+01:00 account="123456" purpose="fooPurpose" classification="c1" partner="fooPartner" partnerAccountNumber="fooPartnerAccount" partnerBank="fooPartnerBank" amount="-42" checksum="034042d7b2d968661ad20da207a7ab81fda9c906"'))
-        it('should log', () => expect(serviceMock.log.args[1][0]).to.equal('2015-12-14T00:00:00+01:00 account="123456" purpose="bazPurpose" classification="c2" partner="bazPartner" partnerAccountNumber="bazPartnerAccount" partnerBank="bazPartnerBank" amount="1337" checksum="140bc7f1fe29b8f177d2a360144c0ff04f45ea17"'))
+        it('should log', () => expect(serviceMock.log.args[0][0]).to.equal('2015-12-14T00:00:00+00:00 account="123456" purpose="fooPurpose" classification="c1" partner="fooPartner" partnerAccountNumber="fooPartnerAccount" partnerBank="fooPartnerBank" amount="-42" checksum="034042d7b2d968661ad20da207a7ab81fda9c906"'))
+        it('should log', () => expect(serviceMock.log.args[1][0]).to.equal('2015-12-14T00:00:00+00:00 account="123456" purpose="bazPurpose" classification="c2" partner="bazPartner" partnerAccountNumber="bazPartnerAccount" partnerBank="bazPartnerBank" amount="1337" checksum="140bc7f1fe29b8f177d2a360144c0ff04f45ea17"'))
         it('should return the saved positions', () => expect(collection.length).to.equal(2))
         it('should return the saved positions', () => expect(collection[0]._purpose).to.equal('fooPurpose'))
         it('should return the saved positions', () => expect(collection[1]._purpose).to.equal('bazPurpose'))
