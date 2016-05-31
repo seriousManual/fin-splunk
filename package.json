@@ -9,7 +9,7 @@
   "author": "Manuel Ernst <seriousstuff@gmx.de>",
   "license": "MIT",
   "dependencies": {
-    "configurations": "^1.1.0",
+    "configurations": "^2.0.0",
     "csv-parse": "^1.0.1",
     "moment": "^2.10.6",
     "splunk-sdk": "^1.8.0"
